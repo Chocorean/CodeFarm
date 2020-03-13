@@ -1,0 +1,50 @@
+class LootAnim extends Phaser.GameObjects.Container {
+    constructor (scene, x, y, displayWidth, displayHeight, angle, item, quantity) {
+        super(scene);
+
+        this.item = item;
+        let itemTypeData = this.scene.game.scene.getScene('ControllerScene').LIST_ITEM[this.item];
+
+        this.itemIcon = this.scene.add.sprite(0, 0, itemTypeData.texture, itemTypeData.frame);
+        this.add(this.itemIcon);
+
+        let itemIconBounds = this.itemIcon.getBounds();
+        this.itemCountText = this.scene.add.text(
+            0,
+            itemIconBounds.height / 2,
+            this.quantity,
+            {
+                fontSize: '12px',
+                fontFamily: '"Roboto Condensed"',
+                align: 'center',
+                resolution: 3
+            }
+        );
+        this.itemCountText.setOrigin(0.5, 1);
+        this.add(this.itemCountText);
+
+        let dir = new Phaser.Math.Vector2().setToPolar(angle);
+
+        this.scene.tweens.add({
+            targets: this,
+            ease: 'Sine.easeInOut',
+            duration: 1000,
+            delay: 0,
+            x: {
+                getStart: () => x,
+                getEnd: () => x + dir.x * 100
+            },
+            y: {
+                getStart: () => y,
+                getEnd: () => y + dir.y * 100
+            },
+            alpha: {
+                getStart: () => 1,
+                getEnd: () => 0
+            },
+            onComplete: () => {
+                this.destroy(this.scene);
+            }
+        });
+    }
+}
